@@ -1,11 +1,11 @@
 // models/User.model.js
-const mongoose = require('mongoose');
+const { Schema, model } = require("mongoose");
 
-const postSchema = new mongoose.Schema(
+const postSchema = new Schema(
   {
     content: String,
     creatorId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User"
     },
     picPath: String,
@@ -16,4 +16,4 @@ const postSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Post", postSchema);
+module.exports = model("Post", postSchema);
