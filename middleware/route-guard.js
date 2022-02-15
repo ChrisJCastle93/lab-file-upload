@@ -1,5 +1,6 @@
 // checks if the user is logged in when trying to access a specific page
 const isLoggedIn = (req, res, next) => {
+  console.log('entering middleware')
   if (!req.session.currentUser) {
     return res.redirect("/login");
   }

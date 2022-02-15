@@ -1,0 +1,28 @@
+<div id="form">
+
+  {{! error message will be added here }}
+
+  {{#if errorMessage}}
+    <p class="error">{{errorMessage}}</p>
+  {{/if}}
+  <h2>New Post</h2>
+  <form action="/posts/new" method="POST" enctype="multipart/form-data">
+
+    <label>
+      Content
+      <input type="text" name="content" placeholder="blog away" value="Post Content Sample" />
+    </label>
+
+    <label>
+      PicName
+      <input type="text" name="picName" placeholder="pic name" value="Pic 1" />
+    </label>
+
+    <label>
+      Blog Picture:
+      <input type="file" name="blogpic" id="" />
+    </label>
+
+    <button type="submit">Publish Blog</button>
+  </form>
+</div>

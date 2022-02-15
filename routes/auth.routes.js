@@ -1,6 +1,10 @@
 const router = require("express").Router();
 const mongoose = require("mongoose");
 
+// Handles image upload
+// const User = require('../models/User.model')
+const fileUploader = require('../config/cloudinary.config');
+
 // ℹ️ Handles password encryption
 const bcryptjs = require("bcryptjs");
 
@@ -21,7 +25,7 @@ const { isLoggedIn, isLoggedOut } = require("../middleware/route-guard.js");
 router.get("/signup", isLoggedOut, (req, res) => res.render("auth/signup"));
 
 // .post() route ==> to process form data
-router.post("/signup", isLoggedOut, (req, res, next) => {
+router.post("/signup", isLoggedOut, fileUploader.single('profile'), (req, res, next) => {
   const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
@@ -45,17 +49,19 @@ router.post("/signup", isLoggedOut, (req, res, next) => {
     .genSalt(saltRounds)
     .then((salt) => bcryptjs.hash(password, salt))
     .then((hashedPassword) => {
+      // console.log(req.file.path, '<- req.file.path')
       return User.create({
         username,
         email,
         // passwordHash => this is the key from the User model
         //     ^
         //     |            |--> this is placeholder (how we named returning value from the previous method (.hash()))
-        passwordHash: hashedPassword
+        passwordHash: hashedPassword,
+        imageUrl: req.file.path
       });
     })
     .then((userFromDB) => {
-      // console.log("Newly created user is: ", userFromDB);
+      console.log("Newly created user is: ", userFromDB);
       res.redirect("/user-profile");
     })
     .catch((error) => {
@@ -81,22 +87,26 @@ router.get("/login", isLoggedOut, (req, res) => res.render("auth/login"));
 // .post() login route ==> to process form data
 router.post("/login", isLoggedOut, (req, res, next) => {
   const { email, password } = req.body;
-
   if (email === "" || password === "") {
     res.render("auth/login", {
       errorMessage: "Please enter both, email and password to login."
     });
     return;
   }
-
   User.findOne({ email })
     .then((user) => {
+      console.log(user, '<--- found user');
       if (!user) {
+        console.log('no user found');
         res.render("auth/login", { errorMessage: "Email is not registered. Try with other email." });
         return;
       } else if (bcryptjs.compareSync(password, user.passwordHash)) {
+        console.log('PASSWORDS MATCH');
         req.session.user = user;
-        res.redirect("/user-profile");
+        console.log(req.session.user)
+        console.log('redirecting....')
+        res.send("hello")
+        // return res.redirect("/user-profile");
       } else {
         res.render("auth/login", { errorMessage: "Incorrect password." });
       }
@@ -108,12 +118,13 @@ router.post("/login", isLoggedOut, (req, res, next) => {
 ///////////////////////////// LOGOUT ////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-router.post("/logout", isLoggedIn, (req, res) => {
+router.post("/logout", isLoggedIn, (req, res, next) => {
   req.session.destroy();
   res.redirect("/");
 });
 
-router.get("/user-profile", isLoggedIn, (req, res) => {
+router.get("/user-profile", (req, res, next) => {
+  console.log('hitting user-profile route')
   res.render("users/user-profile");
 });
 
