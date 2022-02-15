@@ -25,7 +25,7 @@ app.locals.title = `${capitalized(projectName)}- Generated with Ironlauncher`;
 
 // bind user to view - locals
 app.use('/', (req, res, next) => {
-  res.locals.user = req.session.user
+  res.locals.user = req.session.currentUser
   next()
 })
 
