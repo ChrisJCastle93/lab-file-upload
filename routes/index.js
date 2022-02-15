@@ -5,7 +5,7 @@ const fileUploader = require("../config/cloudinary.config");
 
 /* GET home page */
 router.get("/", (req, res, next) => {
-  Post.find().populate('creatorId').then((response) => {
+  Post.find({}).populate('creatorId').then((response) => {
     console.log(response)
     const posts = response;
     res.render("index", { posts });
@@ -15,7 +15,7 @@ router.get("/", (req, res, next) => {
 /* GET home page */
 router.get("/:id", (req, res, next) => {
   const { id } = req.params
-  Post.findById(id).populate('creatorId').then((response) => {
+  Post.findById({_id: id}).populate('creatorId').then((response) => {
     console.log(response)
     const post = response;
     res.render("post", { post });
