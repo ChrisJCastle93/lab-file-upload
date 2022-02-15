@@ -11,8 +11,6 @@ router.get("/", (req, res, next) => {
   });
 });
 
-
-
 router.get("/new", (req, res, next) => {
   res.render("newpost");
 });
@@ -46,7 +44,7 @@ router.post("/posts/new", fileUploader.single("blogpic"), (req, res, next) => {
 });
 
 /* GET home page */
-router.get("/:id", (req, res, next) => {
+router.get("/posts/:id", (req, res, next) => {
   const { id } = req.params
   Post.findById({_id: id}).populate('creatorId').then((response) => {
     const post = response;
