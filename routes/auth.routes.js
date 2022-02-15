@@ -86,6 +86,7 @@ router.get("/login", isLoggedOut, (req, res) => res.render("auth/login"));
 
 // .post() login route ==> to process form data
 router.post("/login", isLoggedOut, (req, res, next) => {
+  console.log('SESSION =====> ', req.session);
   const { email, password } = req.body;
   if (email === "" || password === "") {
     res.render("auth/login", {
@@ -93,25 +94,20 @@ router.post("/login", isLoggedOut, (req, res, next) => {
     });
     return;
   }
-  User.findOne({ email })
-    .then((user) => {
-      console.log(user, '<--- found user');
+    User.findOne({ email })
+    .then(user => {
       if (!user) {
-        console.log('no user found');
-        res.render("auth/login", { errorMessage: "Email is not registered. Try with other email." });
+        res.render('auth/login', { errorMessage: 'Email is not registered. Try with other email.' });
         return;
       } else if (bcryptjs.compareSync(password, user.passwordHash)) {
         console.log('PASSWORDS MATCH');
-        req.session.user = user;
-        console.log(req.session.user)
-        console.log('redirecting....')
-        res.send("hello")
-        // return res.redirect("/user-profile");
+        req.session.currentUser = user;
+        res.redirect('/user-profile');
       } else {
-        res.render("auth/login", { errorMessage: "Incorrect password." });
+        res.render('auth/login', { errorMessage: 'Incorrect password.' });
       }
     })
-    .catch((error) => next(error));
+    .catch(error => next(error));
 });
 
 ////////////////////////////////////////////////////////////////////////
@@ -123,9 +119,10 @@ router.post("/logout", isLoggedIn, (req, res, next) => {
   res.redirect("/");
 });
 
-router.get("/user-profile", (req, res, next) => {
+router.get("/user-profile", isLoggedIn, (req, res, next) => {
   console.log('hitting user-profile route')
-  res.render("users/user-profile");
+  const user = req.session.currentUser;
+  res.render("users/user-profile", { user });
 });
 
 module.exports = router;

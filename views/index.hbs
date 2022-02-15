@@ -1,2 +1,17 @@
 <h1>{{title}}</h1>
 <p>Welcome to {{title}}</p>
+
+{{#each posts}}
+<a href="/{{_id}}">
+  <div class="p-card">
+    <img
+      class="p-card__thumbnail"
+      src="{{ picPath }}"
+      alt=""
+    />
+    <hr class="u-sv1" />
+    <h3> {{ creatorId.username }} </h3>
+    <p class="p-card__content">{{ content }}</p>
+  </div>
+  </a>
+{{/each}}
